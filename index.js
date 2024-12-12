@@ -1,4 +1,5 @@
 const express = require("express");
+const res = require("express/lib/response");
 const mysql = require("mysql");
 
 const app = express();
@@ -24,6 +25,26 @@ db.connect((error) => {
     }
 });
 
+//crear una nueva materia
+app.post("/materias", (req, res) => {
+    const materia = req.body;
+    const sql = "INSERT INTO materias (NombreMateria, Descripcion, Nota) VALUES(?, ?, ?)";
+    
+    db.query(
+       sql, [
+        materia.NombreMateria,materia.Descripcion,materia.Nota,], 
+        (err, result) => {
+            if (err) {
+                console.error("Error al crear una nueva materia:", err);
+                res.status(500).json({ error: "Error al crear una nueva materia"})
+            } else {
+                console.log("Materia creada con exito")
+                res.status(201).json({ message: "Materia Creada", id: result.intserId});
+            }
+
+        }
+    )
+})
 
 //iniciar el servidor
 app.listen(port, () =>{
